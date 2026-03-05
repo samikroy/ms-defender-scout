@@ -1,0 +1,94 @@
+name: Generate MS Defender Scout Report
+
+on:
+  # Run on manual trigger
+  workflow_dispatch:
+  
+  # Run on schedule - Weekly on Monday at 6 AM UTC
+  schedule:
+    - cron: '0 6 * * 1'
+  
+  # Run on push to main branch (optional)
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/**'
+      - '.github/workflows/**'
+
+permissions:
+  contents: write
+
+jobs:
+  generate-report:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🔄 Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: 🔐 Setup Environment Variables
+        run: |
+          echo "AZURE_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }}" >> $GITHUB_ENV
+          echo "AZURE_CLIENT_SECRET=${{ secrets.AZURE_CLIENT_SECRET }}" >> $GITHUB_ENV
+          echo "AZURE_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_ENV
+      
+      - name: ✅ Verify Environment
+        shell: pwsh
+        run: |
+          Write-Host "🔍 Checking environment variables..." -ForegroundColor Cyan
+          if ([string]::IsNullOrEmpty($env:AZURE_CLIENT_ID)) {
+            Write-Host "❌ AZURE_CLIENT_ID is not set" -ForegroundColor Red
+            exit 1
+          }
+          if ([string]::IsNullOrEmpty($env:AZURE_CLIENT_SECRET)) {
+            Write-Host "❌ AZURE_CLIENT_SECRET is not set" -ForegroundColor Red
+            exit 1
+          }
+          if ([string]::IsNullOrEmpty($env:AZURE_TENANT_ID)) {
+            Write-Host "❌ AZURE_TENANT_ID is not set" -ForegroundColor Red
+            exit 1
+          }
+          Write-Host "✅ All environment variables are set" -ForegroundColor Green
+      
+      - name: 🚀 Run Defender Scout Report Generation
+        shell: pwsh
+        run: |
+          Write-Host "🛡️ Starting Microsoft Defender Scout Assessment..." -ForegroundColor Cyan
+          .\scripts\generate-ms-defender-scout-report.ps1
+      
+      - name: 📊 Display Report Summary
+        shell: pwsh
+        run: |
+          if (Test-Path "./ms-defender-scout-report.html") {
+            $fileSize = (Get-Item "./ms-defender-scout-report.html").Length
+            $fileSizeKB = [math]::Round($fileSize / 1KB, 2)
+            Write-Host "✅ Report generated successfully!" -ForegroundColor Green
+            Write-Host "📄 File: ms-defender-scout-report.html" -ForegroundColor Cyan
+            Write-Host "📏 Size: $fileSizeKB KB" -ForegroundColor Cyan
+          } else {
+            Write-Host "❌ Report file not found!" -ForegroundColor Red
+            exit 1
+          }
+      
+      - name: 📦 Upload Report as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ms-defender-scout-report-${{ github.run_number }}
+          path: ms-defender-scout-report.html
+          retention-days: 90
+      
+      - name: 💾 Commit Report to Repository (Optional)
+        if: github.event_name != 'pull_request'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "GitHub Actions"
+          git add ms-defender-scout-report.html || true
+          git diff --quiet && git diff --staged --quiet || (git commit -m "📊 Update Defender Scout Report - $(date +'%Y-%m-%d %H:%M:%S')" && git push) || echo "No changes to commit"
+      
+      - name: 🎉 Workflow Complete
+        shell: pwsh
+        run: |
+          Write-Host "✅ Microsoft Defender Scout report generation completed!" -ForegroundColor Green
+          Write-Host "📥 Download the report from the Artifacts section" -ForegroundColor Cyan
+          Write-Host "🔗 Artifacts URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" -ForegroundColor Cyan

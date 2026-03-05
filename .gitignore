@@ -1,0 +1,44 @@
+# Environment variables and secrets
+.env
+.env.local
+*.secret
+
+# PowerShell artifacts
+*.ps1xml
+
+# Reports (uncomment if you don't want to commit reports)
+# ms-defender-scout-report.html
+
+# IDE and editor files
+.vscode/
+.vs/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Node modules (if any JavaScript tools are added)
+node_modules/
+
+# Python virtual environments (if any Python tools are added)
+venv/
+__pycache__/
+*.pyc
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Local test artifacts
+scripts/kql-queries.backup.txt
+scripts/kql-queries-test.txt

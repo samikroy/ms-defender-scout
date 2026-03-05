@@ -1,0 +1,20 @@
+Device Inventory by Operating System >> DeviceInfo | where Timestamp > ago(7d) | summarize DeviceCount = dcount(DeviceId), LastSeen = max(Timestamp) by OSPlatform, OSVersion | order by DeviceCount desc
+Active Devices in Last 24 Hours >> DeviceInfo | where Timestamp > ago(1d) | summarize ActiveDevices = dcount(DeviceId) by bin(Timestamp, 1h) | order by Timestamp desc
+Devices by Onboarding Status >> DeviceInfo | where Timestamp > ago(1d) | summarize TotalDevices = dcount(DeviceId) by OnboardingStatus | order by TotalDevices desc
+Alert Summary by Severity >> AlertInfo | where Timestamp > ago(7d) | summarize AlertCount = count() by Severity | order by AlertCount desc
+Recent High Severity Alerts >> AlertInfo | where Timestamp > ago(7d) and Severity == "High" | summarize Count = count() by Title | order by Count desc | take 10
+Alert Trend by Category >> AlertInfo | where Timestamp > ago(7d) | summarize AlertCount = count() by bin(Timestamp, 1d), Category | order by Timestamp desc
+Top Affected Devices by Alerts >> AlertEvidence | where Timestamp > ago(7d) and EntityType == "Machine" | summarize AlertCount = count() by DeviceName | order by AlertCount desc | take 10
+Vulnerability Assessment by Severity >> DeviceTvmSoftwareVulnerabilities | summarize VulnerabilityCount = count() by VulnerabilitySeverityLevel | order by VulnerabilityCount desc
+Top 10 Vulnerable Software Products >> DeviceTvmSoftwareVulnerabilities | summarize VulnCount = count() by SoftwareName, SoftwareVendor | order by VulnCount desc | take 10
+Devices with Critical Vulnerabilities >> DeviceTvmSoftwareVulnerabilities | where VulnerabilitySeverityLevel == "Critical" | summarize CriticalVulns = count() by DeviceId, DeviceName | order by CriticalVulns desc | take 20
+Security Recommendations by Priority >> DeviceTvmSecureConfigurationAssessment | where Timestamp > ago(7d) and IsApplicable == 1 | summarize MisconfiguredDevices = dcount(DeviceId) by ConfigurationId, ConfigurationCategory | order by MisconfiguredDevices desc | take 15
+Malware Detections in Last 7 Days >> AlertInfo | where Timestamp > ago(7d) and Category == "Malware" | summarize MalwareCount = count() by Title, Severity | order by MalwareCount desc
+Suspicious Process Executions >> DeviceProcessEvents | where Timestamp > ago(1d) and ProcessCommandLine has_any ("powershell", "cmd.exe", "wscript", "cscript") | summarize ExecutionCount = count() by FileName, ProcessCommandLine | order by ExecutionCount desc | take 20
+Network Connections to External IPs >> DeviceNetworkEvents | where Timestamp > ago(1d) and RemoteIPType == "Public" | summarize ConnectionCount = count() by RemoteIP, RemotePort | order by ConnectionCount desc | take 20
+Failed Logon Attempts by Device >> DeviceLogonEvents | where Timestamp > ago(7d) and ActionType == "LogonFailed" | summarize FailedAttempts = count() by DeviceName, AccountName | order by FailedAttempts desc | take 15
+Identity Risk Events >> IdentityLogonEvents | where Timestamp > ago(7d) | summarize LogonCount = count() by Application, AccountUpn | order by LogonCount desc | take 20
+Email Threats Summary >> EmailEvents | where Timestamp > ago(7d) and ThreatTypes != "" | summarize ThreatCount = count() by ThreatTypes | order by ThreatCount desc
+Phishing Email Detection >> EmailEvents | where Timestamp > ago(7d) and ThreatTypes has "Phish" | summarize PhishingEmails = count() by SenderFromAddress | order by PhishingEmails desc | take 15
+Cloud App Activity by User >> CloudAppEvents | where Timestamp > ago(7d) | summarize ActivityCount = count() by AccountDisplayName, Application | order by ActivityCount desc | take 20
+File Integrity Monitoring >> DeviceFileEvents | where Timestamp > ago(1d) and FolderPath has_any ("C:\\Windows\\System32", "C:\\Program Files") | summarize FileChanges = count() by FileName, ActionType | order by FileChanges desc | take 20
