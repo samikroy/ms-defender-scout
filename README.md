@@ -15,6 +15,11 @@
 | 🔐 **Secure Authentication** | Uses Azure Service Principal with Microsoft Graph API |
 | 🧰 **Plug-and-Play** | Just configure secrets, add queries, and run |
 
+## 🔍 Report Snapshot
+
+<img width="1236" height="750" alt="image" src="https://github.com/user-attachments/assets/09aa505a-6ef8-4488-a691-f7c963e9703a" />
+
+
 ## 🔍 What This Tool Does
 
 Generates comprehensive security assessment reports using Advanced Hunting queries across all Microsoft Defender products:
