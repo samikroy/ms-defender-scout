@@ -30,6 +30,50 @@ Generates comprehensive security assessment reports using Advanced Hunting queri
 - Microsoft Defender XDR
 
 ---
+ 
+## � Usage (GitHub Marketplace Action)
+ 
+Add this to your workflow (`.github/workflows/defender-scout.yml`):
+ 
+```yaml
+name: Defender Scout Report
+ 
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'  # Weekly on Monday at 6 AM UTC
+ 
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🛡️ Run Microsoft Defender Scout
+        uses: samikroy/ms-defender-scout@v1
+        with:
+          azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure_client_secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          # report_path: 'my-custom-report.html'  # optional, default: ms-defender-scout-report.html
+```
+ 
+### Inputs
+ 
+| Input | Required | Default | Description |
+|-------|----------|---------|-------------|
+| `azure_client_id` | ✅ | — | Service Principal Application (client) ID |
+| `azure_client_secret` | ✅ | — | Service Principal client secret |
+| `azure_tenant_id` | ✅ | — | Azure AD Tenant ID |
+| `report_path` | ❌ | `ms-defender-scout-report.html` | Output path for the HTML report |
+ 
+### Outputs
+ 
+| Output | Description |
+|--------|-------------|
+| `report_path` | Path to the generated HTML report |
+ 
+The report is also automatically uploaded as a **build artifact** (retained 90 days).
+
+ ---
 
 ## 📁 Repository Structure
 
