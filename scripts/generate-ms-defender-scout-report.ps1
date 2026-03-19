@@ -7,7 +7,7 @@ $clientSecret = $env:AZURE_CLIENT_SECRET
 $tenantId     = $env:AZURE_TENANT_ID
 
 # Output file
-$outputPath = "./ms-defender-scout-report.html"
+$outputPath = $env:REPORT_PATH
 
 # Load queries
 $queries = Get-Content $env:QUERY_PATH | Where-Object { $_.Trim() -ne "" }
