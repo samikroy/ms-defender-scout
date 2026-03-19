@@ -10,7 +10,7 @@ $tenantId     = $env:AZURE_TENANT_ID
 $outputPath = "./ms-defender-scout-report.html"
 
 # Load queries
-$queries = Get-Content "./scripts/kql-queries.txt" | Where-Object { $_.Trim() -ne "" }
+$queries = Get-Content $env:QUERY_PATH | Where-Object { $_.Trim() -ne "" }
 
 # Bootstrap HTML layout
 $dateNow = Get-Date -Format "MMMM dd, yyyy"
