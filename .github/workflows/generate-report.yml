@@ -24,6 +24,9 @@ jobs:
           echo "AZURE_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }}" >> $GITHUB_ENV
           echo "AZURE_CLIENT_SECRET=${{ secrets.AZURE_CLIENT_SECRET }}" >> $GITHUB_ENV
           echo "AZURE_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_ENV
+          echo "QUERY_PATH=${{ vars.QUERY_PATH }}" >> $GITHUB_ENV
+          echo "REPORT_NAME=${{ vars.REPORT_NAME }}" >> $GITHUB_ENV
+          echo "REPORT_PATH=${{ vars.REPORT_PATH }}" >> $GITHUB_ENV
       
       - name: ✅ Verify Environment
         shell: pwsh
