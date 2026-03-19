@@ -25,6 +25,10 @@ inputs:
     description: 'Output path for the HTML report'
     required: false
     default: 'ms-defender-scout-report.html'
+  query_file_path:
+    description: 'Output path for the HTML report'
+    required: false
+    default: './script/kql-queries.txt'
  
 outputs:
   report_path:
@@ -40,7 +44,9 @@ runs:
         AZURE_CLIENT_ID: ${{ inputs.azure_client_id }}
         AZURE_CLIENT_SECRET: ${{ inputs.azure_client_secret }}
         AZURE_TENANT_ID: ${{ inputs.azure_tenant_id }}
+        QUERY_PATH: ${{ inputs.query_file_path }}
         REPORT_PATH: ${{ inputs.report_path }}
+        
       run: |
         Write-Host "🛡️ Starting Microsoft Defender Scout Assessment..." -ForegroundColor Cyan
         & "${{ github.action_path }}/scripts/generate-ms-defender-scout-report.ps1"
