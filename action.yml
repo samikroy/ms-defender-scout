@@ -45,6 +45,7 @@ runs:
         AZURE_CLIENT_SECRET: ${{ inputs.azure_client_secret }}
         AZURE_TENANT_ID: ${{ inputs.azure_tenant_id }}
         QUERY_PATH: ${{ inputs.query_file_path }}
+        REPORT_NAME: ${{ inputs.report_name }}
         REPORT_PATH: ${{ inputs.report_path }}
         
       run: |
