@@ -1,0 +1,68 @@
+#action.yml
+name: 'Microsoft Defender Scout'
+description: 'Automated security assessment report using Microsoft Graph Advanced Hunting across all Defender products'
+author: 'samikroy'
+ 
+branding:
+  icon: 'shield'
+  color: 'blue'
+ 
+inputs:
+  azure_client_id:
+    description: 'Azure AD Application (client) ID for the Service Principal'
+    required: true
+  azure_client_secret:
+    description: 'Azure AD Application client secret'
+    required: true
+  azure_tenant_id:
+    description: 'Azure AD Tenant ID'
+    required: true
+  report_name:
+    description: 'Name for the HTML report'
+    required: false
+    default: 'ms-defender-scout-report'
+  report_path:
+    description: 'Output path for the HTML report'
+    required: false
+    default: 'ms-defender-scout-report.html'
+ 
+outputs:
+  report_path:
+    description: 'Path to the generated HTML report'
+    value: ${{ inputs.report_path }}
+ 
+runs:
+  using: 'composite'
+  steps:
+    - name: 🚀 Run Defender Scout Report Generation
+      shell: pwsh
+      env:
+        AZURE_CLIENT_ID: ${{ inputs.azure_client_id }}
+        AZURE_CLIENT_SECRET: ${{ inputs.azure_client_secret }}
+        AZURE_TENANT_ID: ${{ inputs.azure_tenant_id }}
+        REPORT_PATH: ${{ inputs.report_path }}
+      run: |
+        Write-Host "🛡️ Starting Microsoft Defender Scout Assessment..." -ForegroundColor Cyan
+        & "${{ github.action_path }}/scripts/generate-ms-defender-scout-report.ps1"
+ 
+    - name: 📊 Display Report Summary
+      shell: pwsh
+      run: |
+        $reportPath = "${{ inputs.report_path }}"
+        if (Test-Path $reportPath) {
+          $fileSize = (Get-Item $reportPath).Length
+          $fileSizeKB = [math]::Round($fileSize / 1KB, 2)
+          Write-Host "✅ Report generated successfully!" -ForegroundColor Green
+          Write-Host "📄 File: $reportPath" -ForegroundColor Cyan
+          Write-Host "📏 Size: $fileSizeKB KB" -ForegroundColor Cyan
+        } else {
+          Write-Host "❌ Report file not found at $reportPath!" -ForegroundColor Red
+          exit 1
+        }
+ 
+    - name: 📦 Upload Report as Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.report_name }}
+        path: ${{ inputs.report_path }}
+        retention-days: 90
